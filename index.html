@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midi Recording</title>
+    <script type="module" src=" https://hedgecrw.github.io/WebAudioAPI/lib/webAudioAPI.js"></script>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="">Start Recording</button>
+        <button onclick="">Stop Recording</button>
+        <button onclick="">Play Back Audio</button>
+        <button onclick="">Create .wav File</button>
+    </div>
+    <div class="choice">
+        <label for="device">MIDI Device:&nbsp;</label>
+        <select name="device" id="device" onchange="changeMidiDevice()"></select>
+    </div>
+</body>
+</html>
