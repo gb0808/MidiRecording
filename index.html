@@ -5,17 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Midi Recording</title>
     <script type="module" src=" https://hedgecrw.github.io/WebAudioAPI/lib/webAudioAPI.js"></script>
+    <script src="MIDIMessage.js"></script>
+    <script src="MidiTrack.js"></script>
+    <script src="index.js"></script>
 </head>
 <body>
     <div class="controls">
-        <button onclick="">Start Recording</button>
+        <button onclick="startRecord()">Start Recording</button>
         <button onclick="">Stop Recording</button>
-        <button onclick="">Play Back Audio</button>
+        <button onclick="playTrack()">Play Back Audio</button>
+        <button onclick="clear()">Clear Track</button>
         <button onclick="">Create .wav File</button>
+    </div>
+    <div class="choice">
+        Status:&nbsp;<span id="status">Not Ready</span>
     </div>
     <div class="choice">
         <label for="device">MIDI Device:&nbsp;</label>
         <select name="device" id="device" onchange="changeMidiDevice()"></select>
+    </div>
+    <div class="choice">
+        <label for="instrument">Instrument:&nbsp;</label>
+        <select name="instrument" id="instrument" onchange="changeInstrument()"></select>
     </div>
 </body>
 </html>
