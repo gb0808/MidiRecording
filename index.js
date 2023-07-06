@@ -12,8 +12,20 @@ window.onload = () => {
         deviceSelector.add(new Option(device))
     ));
     window.midiTrack = new MidiTrack();
+    window.recordStatus = false;
     console.log('done set up');
 };
+
+function midiCallback(event) {
+    const cmd = event.data[0];
+    const note = event.data[1];
+    const vel = event.data[2];
+    const message = new MIDIMessage(cmd, note, vel);
+
+    if (window.recordStatus) {
+        window.midiTrack.addNote(message, window.audioAPI.getCurrentTime());
+    }
+}
 
 window.changeMidiDevice = function () {
     const deviceSelector = document.getElementById('device');
@@ -23,10 +35,9 @@ window.changeMidiDevice = function () {
             document.getElementById("status").textContent = 'Connected';
             console.log('Connected to MIDI device!');
         });
+        window.audioAPI.registerMidiDeviceCallback(deviceSelection, midiCallback);
     }
 }
-
-
 
 window.changeInstrument = function () {
     const instrumentSelector = document.getElementById('instrument');
@@ -37,16 +48,25 @@ window.changeInstrument = function () {
         window.audioAPI.updateInstrument('defaultTrack', instrumentSelection).then(() => {
             document.getElementById("status").textContent = 'Ready';
             console.log('Instrument loading complete!');
+            window.instrumentName = instrumentSelection;
         });
     }
 }
 
 window.startRecord = function () {
     console.log("Recording Started");
-    window.midiTrack.addNote(new MIDIMessage(144, 60, 30), 1);
-    window.midiTrack.addNote(new MIDIMessage(128, 60, 30), 2);
-    window.midiTrack.addNote(new MIDIMessage(144, 65, 30), 3);
-    window.midiTrack.addNote(new MIDIMessage(128, 65, 30), 4);
+    const startTime = window.audioAPI.getCurrentTime();
+    window.midiTrack.startRecord(startTime);
+    window.midiTrack.addNote(new MIDIMessage(144, 60, 30), startTime + 1);
+    window.midiTrack.addNote(new MIDIMessage(128, 60, 0), startTime + 2);
+    window.midiTrack.addNote(new MIDIMessage(144, 65, 30), startTime + 3);
+    window.midiTrack.addNote(new MIDIMessage(128, 65, 0), startTime + 4);
+    window.recordStatus = true;
+}
+
+window.stopRecord = function () {
+    console.log("Recording Stoped");
+    window.midiTrack.stopRecord(window.audioAPI.getCurrentTime());
 }
 
 window.playTrack = function () {
@@ -54,7 +74,15 @@ window.playTrack = function () {
     window.midiTrack.playTrack().then(() => console.log("EOF"));
 }
 
-window.clear = function() {
-    console.log("Track Cleared")
+window.clear = function () {
+    console.log("Track Cleared");
     window.midiTrack.clearTrack();
+}
+
+window.writeWAV = async function () {
+    console.log("creating .wav");
+    const wav = new WaveFile("test", window.midiTrack);
+    const wavLink = document.getElementById("wav-link")
+    const blob = await wav.writeFile();
+    wavLink.href = URL.createObjectURL(blob, { type: "audio/wav" });
 }
