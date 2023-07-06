@@ -57,10 +57,6 @@ window.startRecord = function () {
     console.log("Recording Started");
     const startTime = window.audioAPI.getCurrentTime();
     window.midiTrack.startRecord(startTime);
-    window.midiTrack.addNote(new MIDIMessage(144, 60, 30), startTime + 1);
-    window.midiTrack.addNote(new MIDIMessage(128, 60, 0), startTime + 2);
-    window.midiTrack.addNote(new MIDIMessage(144, 65, 30), startTime + 3);
-    window.midiTrack.addNote(new MIDIMessage(128, 65, 0), startTime + 4);
     window.recordStatus = true;
 }
 
@@ -69,9 +65,13 @@ window.stopRecord = function () {
     window.midiTrack.stopRecord(window.audioAPI.getCurrentTime());
 }
 
+window.render = function () {
+    window.midiTrack.renderTrack();
+}
+
 window.playTrack = function () {
     console.log("Playing");
-    window.midiTrack.playTrack().then(() => console.log("EOF"));
+    window.midiTrack.playTrack();
 }
 
 window.clear = function () {
@@ -83,6 +83,6 @@ window.writeWAV = async function () {
     console.log("creating .wav");
     const wav = new WaveFile("test", window.midiTrack);
     const wavLink = document.getElementById("wav-link")
-    const blob = await wav.writeFile();
+    const blob = wav.writeFile();
     wavLink.href = URL.createObjectURL(blob, { type: "audio/wav" });
 }
